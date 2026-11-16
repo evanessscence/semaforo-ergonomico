@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>ErgoLuz · Semáforo ergonómico</title>
+<style>
+:root{--bg:#e9dfcf;--ink:#1c2740;--mut:#6b7a93;--glass:rgba(255,255,255,.78);--c:#a9b6c9;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#e9dfcf}}
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
+button{font:inherit;cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #7aa2ff;outline-offset:2px}
+.scene{position:relative;min-height:100%;overflow:hidden;background:var(--bg)}
+.scene svg.bg{position:absolute;inset:0;width:100%;height:100%}
+.glowscreen{fill:var(--c);transition:fill .6s}
+.cloud{animation:drift 40s linear infinite}.cloud.b{animation-duration:62s;animation-delay:-20s}
+@keyframes drift{from{transform:translateX(-60px)}to{transform:translateX(120px)}}
+.steam path{stroke:#fff;stroke-width:3;fill:none;stroke-linecap:round;opacity:0;animation:steam 3s ease-in-out infinite}.steam path:nth-child(2){animation-delay:1s}.steam path:nth-child(3){animation-delay:2s}
+@keyframes steam{0%{opacity:0;transform:translateY(6px)}40%{opacity:.7}100%{opacity:0;transform:translateY(-14px)}}
+/* semáforo */
+.tl-wrap{position:absolute;left:clamp(14px,3vw,40px);top:0;z-index:5;display:flex;align-items:flex-start;gap:18px;max-width:calc(100% - 28px)}
+.halo{position:absolute;left:-90px;top:-40px;width:330px;height:330px;border-radius:50%;background:radial-gradient(circle,var(--c) 0%,transparent 65%);opacity:.38;filter:blur(8px);transition:background .6s;animation:halo 3s ease-in-out infinite;pointer-events:none}
+.tl-wrap[data-c=red] .halo{animation-duration:.9s}.tl-wrap[data-c=gray] .halo{opacity:.12;animation:none}
+@keyframes halo{50%{opacity:.18;transform:scale(1.07)}}
+.hang{position:relative;transform-origin:50% 0;animation:sway 6s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-1.2deg)}50%{transform:rotate(1.2deg)}}
+.hang.kick{animation:kick .9s ease-out,sway 6s ease-in-out .9s infinite}
+@keyframes kick{0%{transform:rotate(7deg)}30%{transform:rotate(-5deg)}60%{transform:rotate(3deg)}100%{transform:rotate(-1.2deg)}}
+.cable{width:6px;height:46px;margin:0 auto;background:linear-gradient(90deg,#2a3242,#4b566b,#2a3242);border-radius:3px}
+.house{position:relative;width:96px;padding:14px 0 16px;border-radius:30px;background:linear-gradient(160deg,#3b4558,#1a202c 60%,#11151e);box-shadow:0 18px 30px #1b243a55,inset 0 2px 3px #ffffff30,inset 0 -3px 6px #0008;display:flex;flex-direction:column;align-items:center;gap:12px}
+.house:before{content:"";position:absolute;inset:5px;border-radius:26px;border:1px solid #ffffff14;pointer-events:none}
+.slot{position:relative;width:64px;height:64px;display:grid;place-items:center}
+.slot:before{content:"";position:absolute;left:-4px;right:-4px;top:-6px;height:30px;border-radius:40px 40px 0 0;background:linear-gradient(#0a0d14,#242c3b);z-index:2;clip-path:inset(0 0 52% 0)}
+.lens{width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#3b4659,#151a25 72%);box-shadow:inset 0 3px 8px #000b,0 0 0 4px #0c1018;position:relative;transition:background .4s,box-shadow .4s}
+.lens:after{content:"";position:absolute;left:11px;top:7px;width:20px;height:10px;border-radius:50%;background:#fff;opacity:.12;transform:rotate(-24deg)}
+.lens.on{animation:breathe 3s ease-in-out infinite}.lens.on:after{opacity:.55}
+.lens.r.on{background:radial-gradient(circle at 38% 30%,#ffd2d5,#ff4d57 45%,#b3202c);box-shadow:0 0 22px 6px #ff4d57aa,0 0 60px 18px #ff4d5755,0 0 0 4px #0c1018;animation:blink 1s steps(1) infinite}
+.lens.y.on{background:radial-gradient(circle at 38% 30%,#fff1c2,#ffc233 45%,#c98a08);box-shadow:0 0 22px 6px #ffc233aa,0 0 60px 18px #ffc23355,0 0 0 4px #0c1018}
+.lens.g.on{background:radial-gradient(circle at 38% 30%,#cffff0,#2fe39a 45%,#12905f);box-shadow:0 0 22px 6px #2fe39aaa,0 0 60px 18px #2fe39a55,0 0 0 4px #0c1018;animation:none}
+.lens.n.on{background:radial-gradient(circle at 38% 30%,#fff,#c3cddc 50%,#8696ad);box-shadow:0 0 16px 4px #c3cddc88,0 0 0 4px #0c1018}
+@keyframes blink{0%{filter:brightness(1.15)}55%{filter:brightness(.45)}}
+@keyframes breathe{50%{filter:brightness(.78)}}
+.rules{display:flex;gap:5px;margin-top:10px;justify-content:center}
+.rules i{width:9px;height:9px;border-radius:50%;background:#aab6c8;border:1.5px solid #fff;box-shadow:0 1px 3px #0003;transition:background .4s}
+.card{margin-top:34px;width:min(310px,calc(100vw - 190px));min-width:190px;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid #fff;border-radius:20px;padding:16px 18px;box-shadow:0 14px 36px #2a3a5a26;position:relative}
+.card:before{content:"";position:absolute;left:-8px;top:34px;width:16px;height:16px;background:inherit;border-left:1px solid #fff;border-bottom:1px solid #fff;transform:rotate(45deg);border-radius:0 0 0 4px}
+.kick-txt{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:7px}
+.kick-txt b{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);transition:background .5s}
+.card h1{font-size:20px;letter-spacing:-.5px;margin:8px 0 4px;line-height:1.2}
+.card p{margin:0;font-size:12.5px;line-height:1.55;color:#4b5b76}
+.card small{display:block;margin-top:8px;font-size:10px;color:#8a98ad}
+.act{margin-top:12px;width:100%;border:0;border-radius:12px;padding:11px 12px;font-weight:800;font-size:12px;color:#fff;background:#1d3768;box-shadow:0 6px 14px #1d376844;transition:transform .15s,background .2s}
+.act:hover{background:#142a54;transform:translateY(-1px)}.act:active{transform:scale(.98)}
+.act.ok{background:#e8f6ef;color:#14774f;box-shadow:none}
+/* dock */
+.dock{position:absolute;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:6;width:min(880px,calc(100% - 24px));background:rgba(255,255,255,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid #fff;border-radius:22px;box-shadow:0 18px 40px #2a1c0a33;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:7px;border:1px solid #dbe3f1;background:#fff;border-radius:99px;padding:7px 12px;font-size:11.5px;font-weight:700;color:#3b4d6c;transition:.15s}
+.chip i{width:9px;height:9px;border-radius:50%}
+.chip:hover{border-color:#7aa2ff}.chip.sel{background:#1d3768;color:#fff;border-color:#1d3768}
+.time{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--mut)}
+.time strong{font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums;min-width:48px}
+.time input{flex:1;min-width:80px;accent-color:#1d3768}
+.mini{border:1px solid #dbe3f1;background:#fff;border-radius:10px;padding:7px 10px;font-size:11px;font-weight:700;color:#3b4d6c}.mini:hover{background:#eef3fc}
+@media(max-width:640px){.chip{padding:6px 9px;font-size:10.5px}.scene{min-height:760px}.card h1{font-size:17px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="scene" id="scene">
+<svg class="bg" viewBox="0 0 1000 680" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+<defs>
+<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7f0e5"/><stop offset="1" stop-color="#e6d9c5"/></linearGradient>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd3ff"/><stop offset="1" stop-color="#e6f5ff"/></linearGradient>
+<linearGradient id="wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4a06a"/><stop offset="1" stop-color="#a06c3b"/></linearGradient>
+<linearGradient id="beam" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6d6" stop-opacity=".55"/><stop offset="1" stop-color="#fff6d6" stop-opacity="0"/></linearGradient>
+<radialGradient id="lampg"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".8"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1000" height="680" fill="url(#wall)"/>
+<rect y="455" width="1000" height="10" fill="#00000010"/>
+<!-- ventana -->
+<g><rect x="600" y="60" width="290" height="260" rx="10" fill="#fff"/><rect x="612" y="72" width="266" height="236" rx="4" fill="url(#sky)"/>
+<circle cx="820" cy="120" r="30" fill="#fff4b8"/><circle cx="820" cy="120" r="46" fill="#fff4b8" opacity=".35"/>
+<g class="cloud"><ellipse cx="680" cy="150" rx="38" ry="12" fill="#fff"/><ellipse cx="705" cy="141" rx="26" ry="12" fill="#fff"/></g>
+<g class="cloud b"><ellipse cx="760" cy="230" rx="30" ry="9" fill="#fff" opacity=".9"/><ellipse cx="780" cy="223" rx="20" ry="9" fill="#fff" opacity=".9"/></g>
+<rect x="743" y="72" width="8" height="236" fill="#fff"/><rect x="612" y="186" width="266" height="8" fill="#fff"/></g>
+<polygon points="612,308 878,308 760,520 470,520" fill="url(#beam)"/>
+<!-- cuadros -->
+<rect x="440" y="96" width="70" height="90" rx="4" fill="#fff" stroke="#d9c9ae" stroke-width="3"/><circle cx="475" cy="130" r="14" fill="#f2b48c"/><path d="M448 178l22-26 14 14 18-22 0 34z" fill="#8fb8a3"/>
+<rect x="525" y="120" width="52" height="64" rx="4" fill="#fff" stroke="#d9c9ae" stroke-width="3"/><path d="M535 170q16-40 32 0" fill="none" stroke="#e08a6a" stroke-width="4"/>
+<!-- lámpara -->
+<circle cx="205" cy="360" r="120" fill="url(#lampg)"/>
+<g><rect x="170" y="470" width="70" height="12" rx="6" fill="#2d3648"/><path d="M205 470L228 380L196 338" stroke="#2d3648" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M170 338l44-30 20 34z" fill="#3c4760"/><ellipse cx="195" cy="342" rx="24" ry="5" fill="#ffe9a8"/></g>
+<!-- monitor -->
+<g><rect x="478" y="400" width="44" height="66" fill="#2b3446"/><rect x="430" y="462" width="140" height="10" rx="5" fill="#222a3a"/>
+<rect x="290" y="210" width="420" height="200" rx="16" fill="#1a212e"/><rect x="302" y="222" width="396" height="176" rx="8" fill="#0f1624"/>
+<rect class="glowscreen" x="302" y="222" width="396" height="176" rx="8" opacity=".16"/>
+<text id="screenTime" x="500" y="324" text-anchor="middle" font-size="52" font-weight="800" fill="#fff" opacity=".88" font-family="Inter,sans-serif" letter-spacing="-2">08:00</text>
+<text x="500" y="352" text-anchor="middle" font-size="12" fill="#fff" opacity=".5" font-family="Inter,sans-serif" letter-spacing="3">TIEMPO DE TRABAJO</text>
+<circle cx="500" cy="404" r="2.5" class="glowscreen" opacity=".9"/></g>
+<!-- escritorio -->
+<rect y="466" width="1000" height="214" fill="url(#wood)"/><rect y="466" width="1000" height="6" fill="#ffffff44"/>
+<g opacity=".12" stroke="#5a3515" stroke-width="2"><path d="M0 540h1000M0 600h1000"/></g>
+<!-- teclado y mouse -->
+<rect x="395" y="500" width="210" height="46" rx="9" fill="#e9edf3"/><rect x="395" y="540" width="210" height="6" rx="3" fill="#c3cad6"/>
+<g stroke="#c9d0dc" stroke-width="2.5" stroke-linecap="round"><path d="M410 512h180M410 522h180M410 532h180"/></g>
+<rect x="640" y="508" width="22" height="34" rx="11" fill="#e9edf3"/>
+<!-- taza -->
+<g><rect x="760" y="486" width="40" height="42" rx="7" fill="#fff"/><path d="M800 496q18 0 18 12t-18 12" fill="none" stroke="#fff" stroke-width="6"/><rect x="760" y="486" width="40" height="8" rx="4" fill="#5b3a29"/>
+<g class="steam" transform="translate(780 480)"><path d="M-8 0q-6-8 0-14"/><path d="M0 0q-6-8 0-14"/><path d="M8 0q-6-8 0-14"/></g></g>
+<!-- planta -->
+<g><path d="M915 440q-32-40-8-84M915 440q10-52 40-76M915 440q-8-30-36-44M915 440q34-24 62-8" stroke="#3f8f5e" stroke-width="9" fill="none" stroke-linecap="round"/>
+<ellipse cx="907" cy="360" rx="14" ry="26" fill="#4fae72"/><ellipse cx="958" cy="368" rx="13" ry="24" fill="#5bbd7d" transform="rotate(20 958 368)"/><ellipse cx="878" cy="400" rx="12" ry="22" fill="#3f8f5e" transform="rotate(-50 878 400)"/>
+<path d="M888 440h56l-8 42h-40z" fill="#d97b5a"/><rect x="884" y="434" width="64" height="10" rx="5" fill="#e48d6d"/></g>
+<!-- libreta -->
+<rect x="140" y="520" width="90" height="62" rx="5" fill="#fff" transform="rotate(-5 185 550)"/><g stroke="#cdd6e4" stroke-width="2" transform="rotate(-5 185 550)"><path d="M152 538h66M152 550h66M152 562h50"/></g>
+</svg>
+
+<div class="tl-wrap" id="tl" data-c="green">
+<div class="halo"></div>
+<div>
+ <div class="hang" id="hang">
+  <div class="cable"></div>
+  <div class="house" role="img" aria-label="Semáforo ergonómico">
+   <div class="slot"><div class="lens r" id="lr"></div></div>
+   <div class="slot"><div class="lens y" id="ly"></div></div>
+   <div class="slot"><div class="lens g" id="lg"></div></div>
+  </div>
+ </div>
+ <div class="rules" id="rules" aria-label="Estado de las 8 reglas"></div>
+</div>
+<div class="card" aria-live="polite">
+ <div class="kick-txt"><b></b><span id="kick">Estado actual</span></div>
+ <h1 id="ttl">Todo en orden</h1>
+ <p id="msg"></p>
+ <small id="src"></small>
+ <button class="act" id="act"></button>
+</div>
+</div>
+
+<div class="dock">
+ <div class="chips" id="chips" role="group" aria-label="Escenarios"></div>
+ <div class="time"><span>Trabajo</span><strong id="tt">08:00</strong><input id="rng" type="range" min="0" max="100" value="8" aria-label="Minutos de trabajo"><button class="mini" id="a5">+5</button><button class="mini" id="a15">+15</button><button class="mini" id="play">▶ Reproducir</button></div>
+</div>
+</div>
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const S={sc:'ok',m:8,last:{eye:0,move:0,brk:0},chair:'yes',feet:'yes',mon:60,h:'yes',w:'yes',cfg:true,run:false};
+const scenes=[['unassessed','Sin evaluar','#9ca8bb'],['ok','Todo en orden','#21b779'],['warning','Próxima pausa','#e9b43b'],['danger','Descanso vencido','#e45151'],['multiple','Varias alertas','#e45151'],['station','Puesto por ajustar','#e45151']];
+const base={unassessed:{m:0,cfg:false,chair:'unknown',feet:'unknown',mon:null,h:'unknown',w:'unknown'},ok:{m:8},warning:{m:17},danger:{m:30},multiple:{m:65},station:{m:12,chair:'no',feet:'no',mon:32,h:'no',w:'no'}};
+const COL={green:'#2fe39a',yellow:'#ffc233',red:'#ff4d57',gray:'#a9b6c9'};
+const TITLE={green:'Todo en orden',yellow:'Atención preventiva',red:'Acción requerida',gray:'Evaluación pendiente'};
+const rank={red:3,yellow:2,gray:1,green:0};
+const tm=(id,t,m,y,r,p,msg,ins,act,src)=>({id,t,st:m>=r?'red':m>=y?'yellow':'green',p,msg,ins,act,src});
+const mn=(id,t,st,p,msg,ins,act,src)=>({id,t,st,p,msg,ins,act,src});
+function rules(){
+ const el=k=>Math.max(0,S.m-S.last[k]);
+ const q=(v,no='yellow')=>!S.cfg||v==='unknown'?'gray':v==='yes'?'green':no;
+ const d=!S.cfg||S.mon==null?'gray':S.mon>=50&&S.mon<=75?'green':S.mon<40||S.mon>100?'red':'yellow';
+ return[
+ tm('T01','Descanso visual',el('eye'),16,20,66,'Descansa los ojos','Mira un punto lejano durante 20 segundos.','Registrar descanso visual','AOA · regla 20-20-20'),
+ tm('T02','Cambio de postura',el('move'),25,30,96,'Levántate y cambia de postura','Camina un poco y modifica tu posición de trabajo.','Registrar movimiento','NIOSH/CDC · cambio de postura'),
+ tm('T03','Pausa de computadora',el('brk'),50,60,85,'Es momento de una pausa','Deja las tareas informáticas 5 minutos o cambia de actividad.','Simular pausa de 5 min','OSHA · descansos'),
+ mn('P01','Silla ajustada',q(S.chair,'red'),78,'Ajusta tu silla','Adapta asiento y respaldo a tu anatomía.','Marcar silla ajustada','Ley 618 · art. 294'),
+ mn('P02','Apoyo de pies',q(S.feet),58,'Comprueba el apoyo de tus pies','Apoya los pies sobre el suelo o un reposapiés.','Marcar pies apoyados','Ley 618 · art. 294(d)'),
+ mn('P08','Distancia de pantalla',d,82,'Ajusta la distancia del monitor','Distancia registrada: '+(S.mon==null?'no indicada':S.mon+' cm')+'. Referencia: 50–75 cm.','Simular monitor a 60 cm','OSHA / INSST'),
+ mn('P09','Altura del monitor',q(S.h),56,'Revisa la altura del monitor','Borde superior de la pantalla cerca de la altura de los ojos.','Marcar pantalla ajustada','OSHA · monitor'),
+ mn('P12','Posición de muñecas',q(S.w),50,'Revisa la posición de las muñecas','Mantén las muñecas alineadas con los antebrazos.','Marcar muñecas revisadas','OSHA · muñecas neutras')];
+}
+function ev(){const r=rules();const c=r.some(x=>x.st==='red')?'red':r.some(x=>x.st==='yellow')?'yellow':r.some(x=>x.st==='gray')?'gray':'green';
+ const o=r.filter(x=>x.st===c).sort((a,b)=>b.p-a.p);return{r,c,p:o[0]||null,n:r.filter(x=>x.st==='red'||x.st==='yellow').length}}
+let prev=null,iv=null;
+const pad=n=>String(n).padStart(2,'0')+':00';
+function render(){
+ const e=ev(),p=e.p;
+ $('#tl').dataset.c=e.c;$('#scene').style.setProperty('--c',COL[e.c]);
+ [['lr','red'],['ly','yellow'],['lg','green']].forEach(([i,c])=>$('#'+i).classList.toggle('on',e.c===c));
+ $('#lg').classList.toggle('n',e.c==='gray');$('#lg').classList.toggle('g',e.c!=='gray');
+ $('#lg').classList.toggle('on',e.c==='green'||e.c==='gray');
+ $('#ttl').textContent=TITLE[e.c];
+ $('#kick').textContent=p?p.id+' · siguiente acción'+(e.n>1?' · +'+(e.n-1)+' más':''):'Estado general';
+ $('#msg').textContent=p?p.msg+'. '+p.ins:e.c==='green'?'Las 8 reglas están verificadas. Sigue alternando actividades y descansos.':'Completa la revisión inicial del puesto.';
+ $('#src').textContent=p?'Fuente: '+p.src:'';
+ const b=$('#act');b.className='act'+(p?'':' ok');
+ b.textContent=!p?'✓ Ergonomía al día':p.st==='gray'?'Simular revisión del puesto':'✓ '+p.act;b.disabled=!p;
+ $('#rules').innerHTML=e.r.map(x=>`<i title="${x.id} · ${x.t}" style="background:${COL[x.st]}"></i>`).join('');
+ $('#tt').textContent=$('#screenTime').textContent=pad(S.m);$('#rng').value=S.m;
+ $('#play').textContent=S.run?'Ⅱ Detener':'▶ Reproducir';
+ document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('sel',c.dataset.k===S.sc));
+ if(prev!==null&&prev!==e.c){const h=$('#hang');h.classList.remove('kick');void h.offsetWidth;h.classList.add('kick')}
+ prev=e.c;
+}
+function stop(){clearInterval(iv);iv=null;S.run=false}
+function scene(k){stop();Object.assign(S,{sc:k,m:8,last:{eye:0,move:0,brk:0},chair:'yes',feet:'yes',mon:60,h:'yes',w:'yes',cfg:true},base[k]);render()}
+function done(){const p=ev().p;if(!p)return;const id=p.id;
+ if(p.st==='gray'){Object.assign(S,{cfg:true,chair:'yes',feet:'yes',mon:60,h:'yes',w:'yes'})}
+ else if(id==='T01')S.last.eye=S.m;else if(id==='T02')S.last.move=S.m;
+ else if(id==='T03'){S.last.brk=S.m;S.last.eye=S.m}
+ else if(id==='P01')S.chair='yes';else if(id==='P02')S.feet='yes';else if(id==='P08')S.mon=60;else if(id==='P09')S.h='yes';else if(id==='P12')S.w='yes';
+ S.sc='custom';render()}
+$('#chips').innerHTML=scenes.map(s=>`<button class="chip" data-k="${s[0]}"><i style="background:${s[2]}"></i>${s[1]}</button>`).join('');
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(b)scene(b.dataset.k)});
+$('#act').addEventListener('click',done);
+$('#rng').addEventListener('input',e=>{stop();S.m=+e.target.value;Object.keys(S.last).forEach(k=>S.last[k]=Math.min(S.last[k],S.m));S.sc='custom';render()});
+const adv=n=>{S.m=Math.min(100,S.m+n);S.sc='custom';render()};
+$('#a5').addEventListener('click',()=>adv(5));$('#a15').addEventListener('click',()=>adv(15));
+$('#play').addEventListener('click',()=>{if(S.run){stop();render();return}S.run=true;S.sc='custom';iv=setInterval(()=>{if(S.m>=100)stop();else S.m++;render()},700);render()});
+scene('ok');
+})();
+</script>
+</body>
+</html>
